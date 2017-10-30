@@ -68,6 +68,13 @@ class FCMTest(unittest.TestCase):
             'https': 'https://domain.com:8888'
         })
 
+    def test_oauthfcm_access_token(self):
+        self.fcm = OAuthFCM('access_token')
+        self.assertEqual(self.fcm.access_token, 'access_token')
+        self.assertEqual(self.fcm.build_headers(), {
+            'Authorization': 'Bearer access_token',
+        })
+
     def test_construct_payload(self):
         res = self.fcm.construct_payload(
             registration_ids=['1', '2'], data=self.data, collapse_key='foo',
@@ -248,6 +255,27 @@ class FCMTest(unittest.TestCase):
             {'message': 'test'}, is_json=True
         )
         self.assertTrue(mock_request.return_value.json.called)
+
+    @patch('requests.Session.post')
+    def test_make_request_authorization_headers(self, mock_request):
+        """ Test make_request authorization headers. """
+
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.content = "OK"
+
+        self.fcm = FCM('123api')
+        self.fcm.make_request(
+            {'message': 'test'}, is_json=True
+        )
+        _, kwargs = mock_request.call_args
+        self.assertEqual(kwargs.get('headers', {}).get('Authorization'), 'key=123api')
+
+        self.fcm = OAuthFCM('access_token')
+        self.fcm.make_request(
+            {'message': 'test'}, is_json=True
+        )
+        _, kwargs = mock_request.call_args
+        self.assertEqual(kwargs.get('headers', {}).get('Authorization'), 'Bearer access_token')
 
     @patch('requests.Session.post')
     def test_make_request_plaintext(self, mock_request):
