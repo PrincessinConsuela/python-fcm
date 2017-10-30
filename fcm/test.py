@@ -449,7 +449,7 @@ class FCMTest(unittest.TestCase):
         self.assertTrue(type(FCM.logger), MagicMock)
         FCM.enable_logging()
         self.assertEqual(FCM.logger.debug.call_count, 2)
-        FCM.logger.debug.assert_any_call('Added a stderr logging handler to logger: fcm')
+        FCM.logger.debug.assert_any_call('Added a stderr logging handler to logger: fcm.fcm')
         FCM.logger.debug.assert_any_call('Added a stderr logging handler to logger: requests.packages.urllib3')
 
     @patch('fcm.logging.getLogger')
@@ -457,7 +457,7 @@ class FCMTest(unittest.TestCase):
         self.assertTrue(type(FCM.logger), MagicMock)
         fcm = FCM('123api', debug=True)
         self.assertEqual(fcm.logger.debug.call_count, 2)
-        fcm.logger.debug.assert_any_call('Added a stderr logging handler to logger: fcm')
+        fcm.logger.debug.assert_any_call('Added a stderr logging handler to logger: fcm.fcm')
         fcm.logger.debug.assert_any_call('Added a stderr logging handler to logger: requests.packages.urllib3')
 
     @patch('requests.Session.post')
