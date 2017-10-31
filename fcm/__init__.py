@@ -1,4 +1,4 @@
-from .fcm import FCM, TopicManager  # pylint: disable=unused-import
+from .fcm import OAuthFCM, FCM, TopicManager  # pylint: disable=unused-import
 
 # -----------------------------------------------------------------------------
 

@@ -204,6 +204,11 @@ class FCM(object):
         if self.debug:
             FCM.enable_logging()
 
+    def build_headers(self):
+        return {
+            'Authorization': 'key=%s' % self.api_key,
+        }
+
     @staticmethod
     def enable_logging(level=logging.DEBUG, handler=None):
         """
@@ -284,9 +289,7 @@ class FCM(object):
         :raises FCMConnectionException: if FCM is screwed
         """
 
-        headers = {
-            'Authorization': 'key=%s' % self.api_key,
-        }
+        headers = self.build_headers()
 
         if is_json:
             headers['Content-Type'] = 'application/json'
@@ -836,3 +839,20 @@ class TopicManager(object):
 
         url = '{}/info/{}{}'.format(self.url, registration_id, '?details=true' if details is True else '')
         return self.json_request(method='get', url=url)
+
+
+class OAuthFCM(FCM):
+    def __init__(self, access_token, proxy=None, timeout=None, debug=False):
+        """
+        :param access_token: OAuth 2.0 access token
+        :param proxy: can be string "http://host:port" or dict {'https':'host:port'}
+        :param timeout: timeout for every HTTP request, see 'requests' documentation for possible values.
+        """
+        self.access_token = access_token
+
+        super(OAuthFCM, self).__init__(access_token, proxy, timeout, debug)
+
+    def build_headers(self):
+        return {
+            'Authorization': 'Bearer %s' % self.access_token,
+        }
